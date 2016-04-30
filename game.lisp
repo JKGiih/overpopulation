@@ -1,12 +1,12 @@
 (defun randomrow ()
   (let ((row ()))
-    (dotimes (i 64)
+    (dotimes (i 66) ;; two columns outside screen
        (setf row (cons (random 2) row)))
     row))
 
 (defun randomrows ()
   (let ((rows ()))
-    (dotimes (i 48)
+    (dotimes (i 50) ;; two rows outside screen
        (setf rows (cons (randomrow) rows)))
     rows))
 
@@ -36,6 +36,19 @@
   (when (sdl:mouse-right-p)
     (setf (gethash 'state world) "start"))
 
+  ;; Update cells
+  (let ((newrows ())
+	(newrow()))
+    (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
+    (loop for i from (gethash 'unscaled-height world) downto 0 do
+	 (setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
+	 (loop for j from (gethash 'unscaled-width world) downto 0 when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
+	      (setf newrow (cons 1 newrow))) ;; cond goes here
+	 (setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
+	 (setf newrows (cons newrow newrows)))
+    (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
+    (setf (gethash 'cells world) newrows)) ;; first row doens't change
+        
   ;; Change the color of the box when left button is down
   (when (sdl:mouse-left-p)
     (setf (gethash 'color world) (sdl:color :r (random 255) :g (random 255) :b (random 255))))
@@ -69,8 +82,8 @@
 
   ;; Draw cells
   (loop for i from 0 to (gethash 'unscaled-height world) do
-  (loop for j from 0 to (gethash 'unscaled-width world) when (eq (nth j (nth i (gethash 'cells world))) 1) do
-       (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
+       (loop for j from 0 to (gethash 'unscaled-width world) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
+	    (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
 
   ;; Scale and draw player surface on screen
   (sdl:draw-surface-at-* (gethash 'player-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player-y world)) (gethash 'scale world))))
