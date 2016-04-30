@@ -47,7 +47,7 @@
 	   (loop for i from (+ (gethash 'unscaled-height world) 0) downto 1 do
 		(setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
 		(loop for j from (+ (gethash 'unscaled-width world) 0) downto 1 do
-		     (cond ((and (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 0) ;; rules for dead cells
+		     (cond ((and (eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 0) ;; rules for dead cells
 				 (eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
 					(nth j (nth (- i 1) (gethash 'cells world)))
 					(nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
@@ -57,7 +57,7 @@
 					(nth j (nth (+ i 1) (gethash 'cells world)))
 					(nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 3))
 			    (setf newrow (cons 1 newrow))) ;; dead will three live neighbours becomes live
-			   ((eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) ;; rules for live cells
+			   ((eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 1) ;; rules for live cells
 			    (cond ((eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
 					  (nth j (nth (- i 1) (gethash 'cells world)))
 					  (nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
@@ -117,8 +117,8 @@
 		:color (gethash 'color world))
 
   ;; Draw cells
-  (loop for i from 0 to (gethash 'unscaled-height world) do
-       (loop for j from 0 to (gethash 'unscaled-width world) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
+  (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
+       (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
 	    (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
 
   ;; Scale and draw player surface on screen
