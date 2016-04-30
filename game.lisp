@@ -32,23 +32,29 @@
 
 (defun update-game (world)
 
+  ;; Update frame
+  (setf (gethash 'frame world) (mod (+ 1 (gethash 'frame world)) 60))
+
   ;; Return to start screen when right key is pressed
   (when (sdl:mouse-right-p)
     (setf (gethash 'state world) "start"))
 
   ;; Update cells
-  (let ((newrows ())
-	(newrow()))
-    (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
-    (loop for i from (gethash 'unscaled-height world) downto 0 do
-	 (setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
-	 (loop for j from (gethash 'unscaled-width world) downto 0 do
-	      (cond ((eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 0) (setf newrow (cons 1 newrow)))
-		    (t (setf newrow (cons 0 newrow))))) ;; cond goes here
-	 (setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
-	 (setf newrows (cons newrow newrows)))
-    (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
-    (setf (gethash 'cells world) newrows)) ;; first row doesn't change
+  (cond ((eq (gethash 'frame world) 0)
+	 (let ((newrows ())
+	       (newrow()))
+	   (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
+	   (loop for i from (gethash 'unscaled-height world) downto 0 do
+		(setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
+		(loop for j from (gethash 'unscaled-width world) downto 0 do
+		     (cond ((eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 0) (setf newrow (cons 1 newrow)))
+			   (t (setf newrow (cons 0 newrow))))) ;; cond goes here
+		(setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
+		(setf newrows (cons newrow newrows)))
+	   (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
+	   (setf (gethash 'cells world) newrows)) ;; first row doesn't change
+	 )
+	(t t))
         
   ;; Change the color of the box when left button is down
   (when (sdl:mouse-left-p)
@@ -106,6 +112,7 @@
     (setf (gethash 'scale world) 10)
     (setf (gethash 'fullscreen world) NIL)
     (setf (gethash 'color world) sdl:*white*)
+    (setf (gethash 'frame world) 0)
     (when (and (probe-file "sounds/sf1.ogg") (probe-file "sounds/sf2.ogg"))
       (setf (gethash 'sound-on-p world) t)
       (setf (gethash 'sound-volume world) 96)
