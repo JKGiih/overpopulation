@@ -42,12 +42,13 @@
     (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
     (loop for i from (gethash 'unscaled-height world) downto 0 do
 	 (setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
-	 (loop for j from (gethash 'unscaled-width world) downto 0 when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
-	      (setf newrow (cons 1 newrow))) ;; cond goes here
+	 (loop for j from (gethash 'unscaled-width world) downto 0 do
+	      (cond ((eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 0) (setf newrow (cons 1 newrow)))
+		    (t (setf newrow (cons 0 newrow))))) ;; cond goes here
 	 (setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
 	 (setf newrows (cons newrow newrows)))
     (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
-    (setf (gethash 'cells world) newrows)) ;; first row doens't change
+    (setf (gethash 'cells world) newrows)) ;; first row doesn't change
         
   ;; Change the color of the box when left button is down
   (when (sdl:mouse-left-p)
