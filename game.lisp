@@ -43,72 +43,28 @@
     (setf (gethash 'state world) "start"))
 
   ;; Update cells once every second
-  (cond ((eq (gethash 'frame world) 0)
-	 (let ((newrows ())
-	       (newrow()))
-	   (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
-	   (loop for i from (+ (gethash 'unscaled-height world) 0) downto 1 do
-		(setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
-		(loop for j from (+ (gethash 'unscaled-width world) 0) downto 1 do
-		     (cond ((and (eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 0) ;; rules for dead cells
-				 (eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
-					(nth j (nth (- i 1) (gethash 'cells world)))
-					(nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
-					(nth (- j 1) (nth i (gethash 'cells world)))
-					(nth (+ j 1) (nth i (gethash 'cells world)))
-					(nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
-					(nth j (nth (+ i 1) (gethash 'cells world)))
-					(nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 3))
-			    (setf newrow (cons 1 newrow))) ;; dead will three live neighbours becomes live
-			   ((eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 1) ;; rules for live cells
-			    (cond ((eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
-					  (nth j (nth (- i 1) (gethash 'cells world)))
-					  (nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
-					  (nth (- j 1) (nth i (gethash 'cells world)))
-					  (nth (+ j 1) (nth i (gethash 'cells world)))
-					  (nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
-					  (nth j (nth (+ i 1) (gethash 'cells world)))
-					  (nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 3)
-				   (setf newrow (cons 1 newrow)))
-				  ((eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
-					  (nth j (nth (- i 1) (gethash 'cells world)))
-					  (nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
-					  (nth (- j 1) (nth i (gethash 'cells world)))
-					  (nth (+ j 1) (nth i (gethash 'cells world)))
-					  (nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
-					  (nth j (nth (+ i 1) (gethash 'cells world)))
-					  (nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 2)
-				   (setf newrow (cons 1 newrow)))
-				  (t (setf newrow (cons 0 newrow)))))
-			   (t (setf newrow (cons 0 newrow))))) ;; cond goes here
-		(setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
-		(setf newrows (cons newrow newrows)))
-	   (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
-	   (setf (gethash 'cells world) newrows)) ;; first row doesn't change
-	 )
-	(t NIL))
         
   ;; Change the color of the box when left button is down
   (when (sdl:mouse-left-p)
     (setf (gethash 'color world) (sdl:color :r (random 255) :g (random 255) :b (random 255))))
   
   ;; Move player
-  (if (sdl:get-key-state :sdl-key-w)
+  (if (and (sdl:get-key-state :sdl-key-w) (eq (nth (+ (round (gethash 'player-x world)) 1) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world))) 0))
       (setf (gethash 'player-y world) (- (gethash 'player-y world) 0.2)))
-  (if (sdl:get-key-state :sdl-key-s)
+  (if (and (sdl:get-key-state :sdl-key-s) (eq (nth (+ (round (gethash 'player-x world)) 1) (nth (+ (round (gethash 'player-y world)) 2) (gethash 'cells world))) 0))
       (setf (gethash 'player-y world) (+ (gethash 'player-y world) 0.2)))
-  (if (sdl:get-key-state :sdl-key-a)
+  (if (and (sdl:get-key-state :sdl-key-a) (eq (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 1) (gethash 'cells world))) 0))
       (setf (gethash 'player-x world) (- (gethash 'player-x world) 0.2)))
-  (if (sdl:get-key-state :sdl-key-d)
+  (if (and (sdl:get-key-state :sdl-key-d) (eq (nth (+ (round (gethash 'player-x world)) 2) (nth (+ (round (gethash 'player-y world)) 1) (gethash 'cells world))) 0))
       (setf (gethash 'player-x world) (+ (gethash 'player-x world) 0.2)))
 
   ;; Keep player within screen
-  (if (> (gethash 'player-y world) (- (gethash 'unscaled-height world) 2))
-      (setf (gethash 'player-y world) (- (gethash 'unscaled-height world) 2)))
+  (if (> (gethash 'player-y world) (- (gethash 'unscaled-height world) 1))
+      (setf (gethash 'player-y world) (- (gethash 'unscaled-height world) 1)))
   (if (< (gethash 'player-y world) 0)
       (setf (gethash 'player-y world) 0))
-  (if (> (gethash 'player-x world) (- (gethash 'unscaled-width world) 2))
-      (setf (gethash 'player-x world) (- (gethash 'unscaled-width world) 2)))
+  (if (> (gethash 'player-x world) (- (gethash 'unscaled-width world) 1))
+      (setf (gethash 'player-x world) (- (gethash 'unscaled-width world) 1)))
   (if (< (gethash 'player-x world) 0)
       (setf (gethash 'player-x world) 0))
 
@@ -116,8 +72,8 @@
   (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color sdl:*green*)
 
   ;; Draw mouse controlled box
-  (sdl:draw-box (sdl:rectangle-from-midpoint-* (sdl:mouse-x) (sdl:mouse-y) 20 20)
-		:color (gethash 'color world))
+  ;; (sdl:draw-box (sdl:rectangle-from-midpoint-* (sdl:mouse-x) (sdl:mouse-y) 20 20)
+  ;;		:color (gethash 'color world))
 
   ;; Draw cells
   (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
@@ -128,8 +84,8 @@
   (sdl:draw-surface-at-* (gethash 'player-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player-y world)) (gethash 'scale world))))
 
   ;; Debug string
-  (sdl:draw-string-shaded-* (write-to-string (sdl-mixer:music-playing-p)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
-
+  (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
+  
   world)
 
 (defun play-game ()
@@ -181,9 +137,9 @@
       (setf (sdl:frame-rate) 60)
 
       ;; Create sprite
-      (setf (gethash 'player-sprite world) (sdl:create-surface (* 2 (gethash 'scale world)) (* 2 (gethash 'scale world))))
-      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (* 2 (gethash 'scale world)) (* 2 (gethash 'scale world)))
-		    :color sdl:*blue* :surface (gethash 'player-sprite world))
+      (setf (gethash 'player-sprite world) (sdl:create-surface (gethash 'scale world) (gethash 'scale world)))
+      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'scale world) (gethash 'scale world))
+		    :color sdl:*red* :surface (gethash 'player-sprite world))
       
       ;; Initialize fonts
       (unless (sdl:initialise-default-font sdl:*ttf-font-vera*)
