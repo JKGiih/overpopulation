@@ -22,6 +22,9 @@
 
   ;; Begin game when left key is pressed
   (when (sdl:mouse-left-p)
+    (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
+    (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
+    (setf (gethash 'cells world) (randomrows))
     (setf (gethash 'state world) "game"))
 
   ;; Draw start screen
@@ -100,8 +103,8 @@
       (setf (gethash 'player-x world) (+ (gethash 'player-x world) 0.2)))
 
   ;; Keep player within screen
-  (if (> (gethash 'player-y world) (- (gethash 'unscaled-height world) 4))
-      (setf (gethash 'player-y world) (- (gethash 'unscaled-height world) 4)))
+  (if (> (gethash 'player-y world) (- (gethash 'unscaled-height world) 2))
+      (setf (gethash 'player-y world) (- (gethash 'unscaled-height world) 2)))
   (if (< (gethash 'player-y world) 0)
       (setf (gethash 'player-y world) 0))
   (if (> (gethash 'player-x world) (- (gethash 'unscaled-width world) 2))
@@ -110,7 +113,7 @@
       (setf (gethash 'player-x world) 0))
 
   ;; Draw green background
-  ;; (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color sdl:*green*)
+  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color sdl:*green*)
 
   ;; Draw mouse controlled box
   (sdl:draw-box (sdl:rectangle-from-midpoint-* (sdl:mouse-x) (sdl:mouse-y) 20 20)
@@ -152,8 +155,6 @@
       (setf (gethash 'music-volume world) 96)
       (setf (gethash 'music world) NIL))
 
-    (setf (gethash 'cells world) (randomrows)) ;; Cells for game of life
-    
     ;; Read config file, change default config
     (when (probe-file "config.lisp")
       (load "config.lisp")
@@ -167,10 +168,12 @@
 
     ;; Set fields that depend on config
     (setf world (calculate-scale world))
-    (setf (gethash 'player-x world) (/ (gethash 'unscaled-width world) 2))
-    (setf (gethash 'player-y world) (/ (gethash 'unscaled-height world) 2))
+    (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
+    (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
     (setf (gethash 'player-sprite world) NIL)
 
+    (setf (gethash 'cells world) (randomrows)) ;; Cells for game of life
+    
     (sdl:with-init ()
 
       ;; Create window
@@ -178,8 +181,8 @@
       (setf (sdl:frame-rate) 60)
 
       ;; Create sprite
-      (setf (gethash 'player-sprite world) (sdl:create-surface (* 2 (gethash 'scale world)) (* 4 (gethash 'scale world))))
-      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (* 2 (gethash 'scale world)) (* 4 (gethash 'scale world)))
+      (setf (gethash 'player-sprite world) (sdl:create-surface (* 2 (gethash 'scale world)) (* 2 (gethash 'scale world))))
+      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (* 2 (gethash 'scale world)) (* 2 (gethash 'scale world)))
 		    :color sdl:*blue* :surface (gethash 'player-sprite world))
       
       ;; Initialize fonts
@@ -222,6 +225,9 @@
 			 (when (sdl:key= key :sdl-key-return)
 			   (cond
 			     ((equal (gethash 'state world) "start")
+			      (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
+			      (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
+			      (setf (gethash 'cells world) (randomrows))
 			      (setf (gethash 'state world) "game"))))
 			 (when (or (sdl:key= key :sdl-key-w) (sdl:key= key :sdl-key-s) (sdl:key= key :sdl-key-a) (sdl:key= key :sdl-key-d))
 			   (if (and (gethash 'sound-on-p world) (not (sdl-mixer:sample-playing-p 0)))
