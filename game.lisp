@@ -43,6 +43,50 @@
     (setf (gethash 'state world) "start"))
 
   ;; Update cells once every second
+  (cond ((eq (gethash 'frame world) 0)
+	 (let ((newrows ())
+	       (newrow()))
+	   (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
+	   (loop for i from (+ (gethash 'unscaled-height world) 0) downto 1 do
+		(setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
+		(loop for j from (+ (gethash 'unscaled-width world) 0) downto 1 do
+		     (cond ((and (eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 0) ;; rules for dead cells
+				 (eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
+					(nth j (nth (- i 1) (gethash 'cells world)))
+					(nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
+					(nth (- j 1) (nth i (gethash 'cells world)))
+					(nth (+ j 1) (nth i (gethash 'cells world)))
+					(nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
+					(nth j (nth (+ i 1) (gethash 'cells world)))
+					(nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 3))
+			    (setf newrow (cons 1 newrow))) ;; dead will three live neighbours becomes live
+			   ((eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 1) ;; rules for live cells
+			    (cond ((eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
+					  (nth j (nth (- i 1) (gethash 'cells world)))
+					  (nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
+					  (nth (- j 1) (nth i (gethash 'cells world)))
+					  (nth (+ j 1) (nth i (gethash 'cells world)))
+					  (nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
+					  (nth j (nth (+ i 1) (gethash 'cells world)))
+					  (nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 3)
+				   (setf newrow (cons 1 newrow)))
+				  ((eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
+					  (nth j (nth (- i 1) (gethash 'cells world)))
+					  (nth (+ j 1) (nth (- i 1) (gethash 'cells world)))
+					  (nth (- j 1) (nth i (gethash 'cells world)))
+					  (nth (+ j 1) (nth i (gethash 'cells world)))
+					  (nth (- j 1) (nth (+ i 1) (gethash 'cells world)))
+					  (nth j (nth (+ i 1) (gethash 'cells world)))
+					  (nth (+ j 1) (nth (+ i 1) (gethash 'cells world)))) 2)
+				   (setf newrow (cons 1 newrow)))
+				  (t (setf newrow (cons 0 newrow)))))
+			   (t (setf newrow (cons 0 newrow))))) ;; cond goes here
+		(setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
+		(setf newrows (cons newrow newrows)))
+	   (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
+	   (setf (gethash 'cells world) newrows)) ;; first row doesn't change
+	 )
+	(t NIL))
         
   ;; Change the color of the box when left button is down
   (when (sdl:mouse-left-p)
