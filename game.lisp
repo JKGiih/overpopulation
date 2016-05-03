@@ -1,13 +1,13 @@
-(defun randomrow ()
+(defun randomrow (c)
   (let ((row ()))
-    (dotimes (i 66) ;; two columns outside screen
+    (dotimes (i c) ;; two columns outside screen
        (setf row (cons (random 2) row)))
     row))
 
-(defun randomrows ()
+(defun randomrows (r c)
   (let ((rows ()))
-    (dotimes (i 50) ;; two rows outside screen
-       (setf rows (cons (randomrow) rows)))
+    (dotimes (i r) ;; two rows outside screen
+       (setf rows (cons (randomrow c) rows)))
     rows))
 
 (defun calculate-scale (c)
@@ -44,9 +44,9 @@
   (cond ((eq (gethash 'frame world) 0)
 	 (let ((newrows ())
 	       (newrow()))
-	   (setf newrows (cons (nth 49 (gethash 'cells world)) newrows)) ;; last row doesn't change
+	   (setf newrows (cons (nth (- (list-length (gethash 'cells world)) 1) (gethash 'cells world)) newrows)) ;; last row doesn't change
 	   (loop for i from (+ (gethash 'unscaled-height world) 0) downto 1 do
-		(setf newrow (cons (nth 65 (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
+		(setf newrow (cons (nth (- (list-length (nth i (gethash 'cells world))) 1) (nth i (gethash 'cells world))) newrow)) ;; last cell in row doesn't change
 		(loop for j from (+ (gethash 'unscaled-width world) 0) downto 1 do
 		     (cond ((and (eq (nth (+ j 0) (nth (+ i 0) (gethash 'cells world))) 0) ;; rules for dead cells
 				 (eq (+ (nth (- j 1) (nth (- i 1) (gethash 'cells world)))
@@ -156,7 +156,7 @@
   (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
   (setf (gethash 'companion-x world) (random (gethash 'unscaled-width world)))
   (setf (gethash 'companion-y world) (random (gethash 'unscaled-height world)))
-  (setf (gethash 'cells world) (randomrows))
+  (setf (gethash 'cells world) (randomrows (+ (gethash 'unscaled-height world) 2) (+ (gethash 'unscaled-width world) 2)))
     
   world)
 
@@ -166,8 +166,8 @@
     (setf (gethash 'state world) "start")
     (setf (gethash 'width world) 800)
     (setf (gethash 'height world) 600)
-    (setf (gethash 'unscaled-width world) 64)
-    (setf (gethash 'unscaled-height world) 48)
+    (setf (gethash 'unscaled-width world) 80)
+    (setf (gethash 'unscaled-height world) 60)
     (setf (gethash 'widescreen-offset world) 0)
     (setf (gethash 'scale world) 10)
     (setf (gethash 'fullscreen world) NIL)
