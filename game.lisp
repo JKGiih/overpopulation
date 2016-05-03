@@ -20,29 +20,41 @@
 
 (defun update-start (world)
 
-  ;; Begin game when left key is pressed
-  (when (sdl:mouse-left-p)
-    (setq world (initialize-game world))
-    (setf (gethash 'state world) "game"))
-
   ;; Draw start screen
   (sdl:draw-box (sdl:rectangle-from-midpoint-* (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) (- (gethash 'width world) (/ (gethash 'width world) 10)) (- (gethash 'height world) (/ (gethash 'height world) 2)))
 		:color (gethash 'color world))
   (sdl:draw-string-shaded-* "Click mouse to start" (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
   world)
 
-(defun update-win (world)
+(defun draw-win (world)
 
-  ;; Begin game when left key is pressed
-  (when (sdl:mouse-left-p)
-    (setq world (initialize-game world))
-    (setf (gethash 'state world) "game"))
+  (draw-game world)
 
-  ;; Draw start screen
-  (sdl:draw-box (sdl:rectangle-from-midpoint-* (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) (- (gethash 'width world) (/ (gethash 'width world) 10)) (- (gethash 'height world) (/ (gethash 'height world) 2)))
-		:color (gethash 'color world))
-  (sdl:draw-string-shaded-* "Click mouse to start" (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
-  world)
+  (sdl:draw-string-shaded-* "You won. Press enter for a new game." (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
+  
+  t)
+
+(defun draw-game (world)
+  
+    ;; Draw green background
+  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color (sdl:color :r 6 :g 64 :b 4))
+
+  ;; Draw cells
+  (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
+       (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
+	    (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
+
+  ;; Scale and draw characters on screen
+  (sdl:draw-surface-at-* (gethash 'player-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player-y world)) (gethash 'scale world))))
+  (sdl:draw-surface-at-* (gethash 'player2-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player2-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player2-y world)) (gethash 'scale world))))
+  (sdl:draw-surface-at-* (gethash 'player3-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player3-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player3-y world)) (gethash 'scale world))))
+  (sdl:draw-surface-at-* (gethash 'player4-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player4-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player4-y world)) (gethash 'scale world))))
+
+  ;; Debug string
+  (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
+
+  t)
+
 
 (defun update-game (world)
 
@@ -184,28 +196,7 @@
   ;; Win conditions
   (cond ((<= (+ (abs (- (gethash 'player-x world) (gethash 'player2-x world))) (abs (- (gethash 'player-x world) (gethash 'player3-x world))) (abs (- (gethash 'player-x world) (gethash 'player4-x world))) (abs (- (gethash 'player2-x world) (gethash 'player-x world))) (abs (- (gethash 'player2-x world) (gethash 'player3-x world))) (abs (- (gethash 'player2-x world) (gethash 'player4-x world))) (abs (- (gethash 'player3-x world) (gethash 'player-x world))) (abs (- (gethash 'player3-x world) (gethash 'player2-x world))) (abs (- (gethash 'player3-x world) (gethash 'player4-x world))) (abs (- (gethash 'player4-x world) (gethash 'player-x world))) (abs (- (gethash 'player4-x world) (gethash 'player2-x world))) (abs (- (gethash 'player4-x world) (gethash 'player3-x world))) (abs (- (gethash 'player-y world) (gethash 'player2-y world))) (abs (- (gethash 'player-y world) (gethash 'player3-y world))) (abs (- (gethash 'player-y world) (gethash 'player4-y world))) (abs (- (gethash 'player2-y world) (gethash 'player-y world))) (abs (- (gethash 'player2-y world) (gethash 'player3-y world))) (abs (- (gethash 'player2-y world) (gethash 'player4-y world))) (abs (- (gethash 'player3-y world) (gethash 'player-y world))) (abs (- (gethash 'player3-y world) (gethash 'player2-y world))) (abs (- (gethash 'player3-y world) (gethash 'player4-y world))) (abs (- (gethash 'player4-y world) (gethash 'player-y world))) (abs (- (gethash 'player4-y world) (gethash 'player2-y world))) (abs (- (gethash 'player4-y world) (gethash 'player3-y world)))) 20)
 	 (setf (gethash 'state world) "win")))
-
-  ;; Draw green background
-  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color (sdl:color :r 6 :g 64 :b 4))
-
-  ;; Draw mouse controlled box
-  ;; (sdl:draw-box (sdl:rectangle-from-midpoint-* (sdl:mouse-x) (sdl:mouse-y) 20 20)
-  ;;		:color (gethash 'color world))
-
-  ;; Draw cells
-  (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
-       (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
-	    (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
-
-  ;; Scale and draw characters on screen
-  (sdl:draw-surface-at-* (gethash 'player-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player-y world)) (gethash 'scale world))))
-  (sdl:draw-surface-at-* (gethash 'player2-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player2-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player2-y world)) (gethash 'scale world))))
-  (sdl:draw-surface-at-* (gethash 'player3-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player3-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player3-y world)) (gethash 'scale world))))
-  (sdl:draw-surface-at-* (gethash 'player4-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player4-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player4-y world)) (gethash 'scale world))))
-
-  ;; Debug string
-  (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
-  
+ 
   world)
 
 (defun initialize-game (world)
@@ -318,15 +309,15 @@
 			   (cond
 			     ((equal (gethash 'state world) "start")
 			      (sdl:push-quit-event))
-			     ((equal (gethash 'state world) "game")
+			     ((or (equal (gethash 'state world) "game") (equal (gethash 'state world) "win"))
 			      (setf (gethash 'state world) "start"))))
 			 (when (sdl:key= key :sdl-key-return)
 			   (cond
-			     ((equal (gethash 'state world) "start")
+			     ((or (equal (gethash 'state world) "start") (equal (gethash 'state world) "win"))
 			      (setq world (initialize-game world))
     			      (setf (gethash 'state world) "game"))))
 			 (when (or (sdl:key= key :sdl-key-w) (sdl:key= key :sdl-key-s) (sdl:key= key :sdl-key-a) (sdl:key= key :sdl-key-d))
-			   (if (and (gethash 'sound-on-p world) (not (sdl-mixer:sample-playing-p 0)))
+			   (if (and (gethash 'sound-on-p world) (not (sdl-mixer:sample-playing-p 0)) (equal (gethash 'state world) "game"))
 			       (sdl-mixer:play-sample (gethash 'sound-effect-1 world) :channel 0 :loop t))))
 
 	(:key-up-event (:key key)
@@ -344,9 +335,10 @@
 		 ((equal (gethash 'state world) "start") 
 		  (setq world (update-start world)))
 		 ((equal (gethash 'state world) "game") 
-		  (setq world (update-game world)))
+		  (setq world (update-game world))
+		  (draw-game world))
 		 ((equal (gethash 'state world) "win")
-		  (setq world (update-win world))))
+		  (draw-win world)))
 
 	       ;; Redraw screen every frame
 	       (sdl:update-display))))))
