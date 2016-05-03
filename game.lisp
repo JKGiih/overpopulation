@@ -22,9 +22,7 @@
 
   ;; Begin game when left key is pressed
   (when (sdl:mouse-left-p)
-    (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
-    (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
-    (setf (gethash 'cells world) (randomrows))
+    (setq world (initialize-game world))
     (setf (gethash 'state world) "game"))
 
   ;; Draw start screen
@@ -113,7 +111,7 @@
       (setf (gethash 'player-x world) 0))
 
   ;; Draw green background
-  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color sdl:*green*)
+  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color (sdl:color :r 12 :g 128 :b 6))
 
   ;; Draw mouse controlled box
   ;; (sdl:draw-box (sdl:rectangle-from-midpoint-* (sdl:mouse-x) (sdl:mouse-y) 20 20)
@@ -124,12 +122,22 @@
        (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'cells world))) 1) do
 	    (sdl:draw-box (sdl:rectangle-from-edges-* (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) j)) (* (gethash 'scale world) i) (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (+ j 1))) (* (gethash 'scale world) (+ i 1))) :color (gethash 'color world))))
 
-  ;; Scale and draw player surface on screen
+  ;; Scale and draw characters on screen
   (sdl:draw-surface-at-* (gethash 'player-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player-y world)) (gethash 'scale world))))
+  (sdl:draw-surface-at-* (gethash 'companion-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'companion-x world)) (gethash 'scale world)))) (round (* (round (gethash 'companion-y world)) (gethash 'scale world))))
 
   ;; Debug string
   (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
   
+  world)
+
+(defun initialize-game (world)
+  (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
+  (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
+  (setf (gethash 'companion-x world) (random (gethash 'unscaled-width world)))
+  (setf (gethash 'companion-y world) (random (gethash 'unscaled-height world)))
+  (setf (gethash 'cells world) (randomrows))
+    
   world)
 
 (defun play-game ()
@@ -145,6 +153,8 @@
     (setf (gethash 'fullscreen world) NIL)
     (setf (gethash 'color world) sdl:*white*)
     (setf (gethash 'frame world) 0)
+    (setf (gethash 'player-sprite world) NIL)
+    (setf (gethash 'compation-sprite world) NIL)
     (when (and (probe-file "sounds/sf1.ogg") (probe-file "sounds/sf2.ogg"))
       (setf (gethash 'sound-on-p world) t)
       (setf (gethash 'sound-volume world) 96)
@@ -168,11 +178,7 @@
 
     ;; Set fields that depend on config
     (setf world (calculate-scale world))
-    (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
-    (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
-    (setf (gethash 'player-sprite world) NIL)
-
-    (setf (gethash 'cells world) (randomrows)) ;; Cells for game of life
+    (setq world (initialize-game world))
     
     (sdl:with-init ()
 
@@ -180,10 +186,13 @@
       (sdl:window (gethash 'width world) (gethash 'height world) :title-caption "Window title goes here" :fullscreen (gethash 'fullscreen world))
       (setf (sdl:frame-rate) 60)
 
-      ;; Create sprite
+      ;; Create sprites
       (setf (gethash 'player-sprite world) (sdl:create-surface (gethash 'scale world) (gethash 'scale world)))
       (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'scale world) (gethash 'scale world))
-		    :color sdl:*red* :surface (gethash 'player-sprite world))
+		    :color (sdl:color :r 224 :g 255 :b 192) :surface (gethash 'player-sprite world))
+      (setf (gethash 'companion-sprite world) (sdl:create-surface (gethash 'scale world) (gethash 'scale world)))
+      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'scale world) (gethash 'scale world))
+		    :color (sdl:color :r 224 :g 255 :b 192) :surface (gethash 'companion-sprite world))
       
       ;; Initialize fonts
       (unless (sdl:initialise-default-font sdl:*ttf-font-vera*)
@@ -225,10 +234,8 @@
 			 (when (sdl:key= key :sdl-key-return)
 			   (cond
 			     ((equal (gethash 'state world) "start")
-			      (setf (gethash 'player-x world) (random (gethash 'unscaled-width world)))
-			      (setf (gethash 'player-y world) (random (gethash 'unscaled-height world)))
-			      (setf (gethash 'cells world) (randomrows))
-			      (setf (gethash 'state world) "game"))))
+			      (setq world (initialize-game world))
+    			      (setf (gethash 'state world) "game"))))
 			 (when (or (sdl:key= key :sdl-key-w) (sdl:key= key :sdl-key-s) (sdl:key= key :sdl-key-a) (sdl:key= key :sdl-key-d))
 			   (if (and (gethash 'sound-on-p world) (not (sdl-mixer:sample-playing-p 0)))
 			       (sdl-mixer:play-sample (gethash 'sound-effect-1 world) :channel 0 :loop t))))
