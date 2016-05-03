@@ -57,10 +57,6 @@
   ;; Update frame
   (setf (gethash 'frame world) (mod (+ 1 (gethash 'frame world)) 60))
 
-  ;; Return to start screen when right key is pressed
-  (when (sdl:mouse-right-p)
-    (setf (gethash 'state world) "start"))
-
   ;; Update npcs once every second
   (let ((npcs (gethash 'npcs world)) (newrows ()) (newrow()))
     (cond ((eq (gethash 'frame world) 0)
@@ -188,8 +184,9 @@
     (setf (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 1) npcs)) 2))
 
   ;; Win conditions
-  (cond ((<= (+ (abs (- (gethash 'player-x world) (gethash 'player2-x world))) (abs (- (gethash 'player-x world) (gethash 'player3-x world))) (abs (- (gethash 'player-x world) (gethash 'player4-x world))) (abs (- (gethash 'player2-x world) (gethash 'player-x world))) (abs (- (gethash 'player2-x world) (gethash 'player3-x world))) (abs (- (gethash 'player2-x world) (gethash 'player4-x world))) (abs (- (gethash 'player3-x world) (gethash 'player-x world))) (abs (- (gethash 'player3-x world) (gethash 'player2-x world))) (abs (- (gethash 'player3-x world) (gethash 'player4-x world))) (abs (- (gethash 'player4-x world) (gethash 'player-x world))) (abs (- (gethash 'player4-x world) (gethash 'player2-x world))) (abs (- (gethash 'player4-x world) (gethash 'player3-x world))) (abs (- (gethash 'player-y world) (gethash 'player2-y world))) (abs (- (gethash 'player-y world) (gethash 'player3-y world))) (abs (- (gethash 'player-y world) (gethash 'player4-y world))) (abs (- (gethash 'player2-y world) (gethash 'player-y world))) (abs (- (gethash 'player2-y world) (gethash 'player3-y world))) (abs (- (gethash 'player2-y world) (gethash 'player4-y world))) (abs (- (gethash 'player3-y world) (gethash 'player-y world))) (abs (- (gethash 'player3-y world) (gethash 'player2-y world))) (abs (- (gethash 'player3-y world) (gethash 'player4-y world))) (abs (- (gethash 'player4-y world) (gethash 'player-y world))) (abs (- (gethash 'player4-y world) (gethash 'player2-y world))) (abs (- (gethash 'player4-y world) (gethash 'player3-y world)))) 20)
-	 (setf (gethash 'state world) "win")))
+  (let ((player-x (gethash 'player-x world)) (player-y (gethash 'player-y world)) (player2-x (gethash 'player2-x world)) (player2-y (gethash 'player2-y world)) (player3-x (gethash 'player3-x world)) (player3-y (gethash 'player3-y world)) (player4-x (gethash 'player4-x world)) (player4-y (gethash 'player4-y world)) (width (gethash 'unscaled-width world)) (height (gethash 'unscaled-height world)))
+    (cond ((<= (+ (abs (- player-x player2-x)) (abs (- player-x player3-x)) (abs (- player-x player4-x)) (abs (- player2-x player-x)) (abs (- player2-x player3-x)) (abs (- player2-x player4-x)) (abs (- player3-x player-x)) (abs (- player3-x player2-x)) (abs (- player3-x player4-x)) (abs (- player4-x player-x)) (abs (- player4-x player2-x)) (abs (- player4-x player3-x)) (abs (- player-y player2-y)) (abs (- player-y player3-y)) (abs (- player-y player4-y)) (abs (- player2-y player-y)) (abs (- player2-y player3-y)) (abs (- player2-y player4-y)) (abs (- player3-y player-y)) (abs (- player3-y player2-y)) (abs (- player3-y player4-y)) (abs (- player4-y player-y)) (abs (- player4-y player2-y)) (abs (- player4-y player3-y))) 20)
+	   (setf (gethash 'state world) "win"))))
  
   world)
 
