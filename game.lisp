@@ -81,8 +81,8 @@
 			   (t (setf newrow (cons 0 newrow))))) ;; cond goes here
 		(setf newrow (cons (nth 0 (nth i (gethash 'cells world))) newrow)) ;; first cell in row doesn't change
 		(setf newrows (cons newrow newrows)))
-	   (setf newrows (cons (nth 0 (gethash 'cells world)) newrows))
-	   (setf (gethash 'cells world) newrows)) ;; first row doesn't change
+	   (setf newrows (cons (nth 0 (gethash 'cells world)) newrows)) ;; first row doesn't change
+	   (setf (gethash 'cells world) newrows))
 	 )
 	(t NIL))
         
@@ -94,38 +94,38 @@
   (cond ((sdl:get-key-state :sdl-key-w)
 	 (cond ((eq (nth (+ (round (gethash 'player-x world)) 1) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'cells world))) 0)
 		(setf (gethash 'player-y world) (- (gethash 'player-y world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 1) (nth (+ (round (gethash 'player2-y world)) 0) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 1) (nth (+ (round (gethash 'player2-y world)) 2) (gethash 'cells world))) 0)
 		(setf (gethash 'player2-y world) (+ (gethash 'player2-y world) 0.2))))
 	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 1) (nth (+ (round (gethash 'player3-y world)) 0) (gethash 'cells world))) 0)
 		(setf (gethash 'player3-y world) (- (gethash 'player3-y world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 0) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 2) (gethash 'cells world))) 0)
 		(setf (gethash 'player4-y world) (+ (gethash 'player4-y world) 0.2))))))
   (cond ((sdl:get-key-state :sdl-key-s)
 	 (cond ((eq (nth (+ (round (gethash 'player-x world)) 1) (nth (+ (round (gethash 'player-y world)) 2) (gethash 'cells world))) 0)
 		(setf (gethash 'player-y world) (+ (gethash 'player-y world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 1) (nth (+ (round (gethash 'player2-y world)) 2) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 1) (nth (+ (round (gethash 'player2-y world)) 0) (gethash 'cells world))) 0)
 		(setf (gethash 'player2-y world) (- (gethash 'player2-y world) 0.2))))
 	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 1) (nth (+ (round (gethash 'player3-y world)) 2) (gethash 'cells world))) 0)
 		(setf (gethash 'player3-y world) (+ (gethash 'player3-y world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 2) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 0) (gethash 'cells world))) 0)
 		(setf (gethash 'player4-y world) (- (gethash 'player4-y world) 0.2))))))
   (cond ((sdl:get-key-state :sdl-key-a)
 	 (cond ((eq (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player-x world) (- (gethash 'player-x world) 0.2))))
 	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 0) (nth (+ (round (gethash 'player2-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player2-x world) (- (gethash 'player2-x world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 0) (nth (+ (round (gethash 'player3-y world)) 1) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 2) (nth (+ (round (gethash 'player3-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player3-x world) (+ (gethash 'player3-x world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 0) (nth (+ (round (gethash 'player4-y world)) 1) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 2) (nth (+ (round (gethash 'player4-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player4-x world) (+ (gethash 'player4-x world) 0.2))))))
   (cond ((sdl:get-key-state :sdl-key-d)
 	 (cond ((eq (nth (+ (round (gethash 'player-x world)) 2) (nth (+ (round (gethash 'player-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player-x world) (+ (gethash 'player-x world) 0.2))))
 	 (cond ((eq (nth (+ (round (gethash 'player2-x world)) 2) (nth (+ (round (gethash 'player2-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player2-x world) (+ (gethash 'player2-x world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 2) (nth (+ (round (gethash 'player3-y world)) 1) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player3-x world)) 0) (nth (+ (round (gethash 'player3-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player3-x world) (- (gethash 'player3-x world) 0.2))))
-	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 2) (nth (+ (round (gethash 'player4-y world)) 1) (gethash 'cells world))) 0)
+	 (cond ((eq (nth (+ (round (gethash 'player4-x world)) 0) (nth (+ (round (gethash 'player4-y world)) 1) (gethash 'cells world))) 0)
 		(setf (gethash 'player4-x world) (- (gethash 'player4-x world) 0.2))))))
 
   ;; Keep characters within screen
@@ -161,6 +161,12 @@
       (setf (gethash 'player4-x world) (- (gethash 'unscaled-width world) 1)))
   (if (< (gethash 'player4-x world) 0)
       (setf (gethash 'player4-x world) 0))
+
+  ;; Set character cells to 2
+  (setf (nth (+ (round (gethash 'player-x world)) 1) (nth (+ (round (gethash 'player-y world)) 1) (gethash 'cells world))) 2)
+  (setf (nth (+ (round (gethash 'player2-x world)) 1) (nth (+ (round (gethash 'player2-y world)) 1) (gethash 'cells world))) 2)
+  (setf (nth (+ (round (gethash 'player3-x world)) 1) (nth (+ (round (gethash 'player3-y world)) 1) (gethash 'cells world))) 2)
+  (setf (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 1) (gethash 'cells world))) 2)
 
   ;; Draw green background
   (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color (sdl:color :r 6 :g 64 :b 4))
