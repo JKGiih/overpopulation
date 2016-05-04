@@ -221,11 +221,10 @@
     (setf (gethash 'player2-sprite world) NIL)
     (setf (gethash 'player3-sprite world) NIL)
     (setf (gethash 'player4-sprite world) NIL)
-    (when (and (probe-file "sounds/sf1.ogg") (probe-file "sounds/sf2.ogg"))
+    (when (probe-file "sounds/sf.ogg")
       (setf (gethash 'sound-on-p world) t)
       (setf (gethash 'sound-volume world) 96)
-      (setf (gethash 'sound-effect-1 world) NIL)
-      (setf (gethash 'sound-effect-2 world) NIL))
+      (setf (gethash 'sound-effect-1 world) NIL))
     (when (probe-file "sounds/bgm.ogg")
       (setf (gethash 'music-on-p world) t)
       (setf (gethash 'music-volume world) 96)
@@ -237,7 +236,7 @@
       (setf world (change-config world)))
 
     ;; Set sound off if files missing
-    (when (not (and (probe-file "sounds/sf1.ogg") (probe-file "sounds/sf2.ogg")))
+    (when (not (probe-file "sounds/sf.ogg"))
       (setf (gethash 'sound-on-p world) NIL))
     (when (not (probe-file "sounds/bgm.ogg"))
       (setf (gethash 'music-on-p world) NIL))
@@ -280,10 +279,8 @@
 	  (sdl-mixer:play-music (gethash 'music world) :loop t))
 	(when (gethash 'sound-on-p world)
 	  (sdl-mixer:reserve-channels 1) ; Reserve channel 0 for looping sound effect
-	  (setf (gethash 'sound-effect-1 world) (sdl-mixer:load-sample "sounds/sf1.ogg"))
-	  (setf (gethash 'sound-effect-2 world) (sdl-mixer:load-sample "sounds/sf2.ogg"))
-	  (setf (sdl-mixer:sample-volume (gethash 'sound-effect-1 world)) (gethash 'sound-volume world))
-	  (setf (sdl-mixer:sample-volume (gethash 'sound-effect-2 world)) (gethash 'sound-volume world))))
+	  (setf (gethash 'sound-effect-1 world) (sdl-mixer:load-sample "sounds/sf.ogg"))
+	  (setf (sdl-mixer:sample-volume (gethash 'sound-effect-1 world)) (gethash 'sound-volume world))))
 	  
       (sdl:with-events ()
 
