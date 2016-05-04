@@ -20,9 +20,8 @@
 
 (defun update-start (world)
   ;; Draw start screen
-  (sdl:draw-box (sdl:rectangle-from-midpoint-* (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) (- (gethash 'width world) (/ (gethash 'width world) 10)) (- (gethash 'height world) (/ (gethash 'height world) 2)))
-		:color (gethash 'npc-color world))
-  (sdl:draw-string-shaded-* "Click mouse to start" (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
+  (sdl:draw-box (sdl:rectangle-from-midpoint-* (round (/ (gethash 'width world) 2.0)) (round (/ (gethash 'height world) 2.0)) (round (- (gethash 'width world) (/ (gethash 'width world) 10.0))) (round (- (gethash 'height world) (/ (gethash 'height world) 2.0)))) :color (gethash 'npc-color world))
+  (sdl:draw-string-shaded-* "Overpopulation" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 3.0)) (gethash 'player-color world) sdl:*black*)
   world)
 
 (defun draw-win (world)
@@ -47,7 +46,7 @@
   (sdl:draw-surface-at-* (gethash 'player4-sprite world) (round (+ (gethash 'widescreen-offset world) (* (round (gethash 'player4-x world)) (gethash 'scale world)))) (round (* (round (gethash 'player4-y world)) (gethash 'scale world))))
 
   ;; Debug string
-  (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'npcs world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
+  ;; (sdl:draw-string-shaded-* (write-to-string (nth (+ (round (gethash 'player-x world)) 0) (nth (+ (round (gethash 'player-y world)) 0) (gethash 'npcs world)))) (/ (gethash 'width world) 2) (/ (gethash 'height world) 5) sdl:*red* sdl:*black*)
 
   t)
 
@@ -268,7 +267,8 @@
 		    :color (gethash 'player-color world) :surface (gethash 'player4-sprite world))
       
       ;; Initialize fonts
-      (unless (sdl:initialise-default-font sdl:*ttf-font-vera*)
+      (defparameter *ebgaramond-ttf* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 8)) :filename "EBGaramond12-Regular.ttf"))
+      (unless (sdl:initialise-default-font *ebgaramond-ttf*) ;; sdl:*ttf-font-vera*
 	(error "Cannot initialize the default font."))
 
       ;; Load sounds and music and play music
