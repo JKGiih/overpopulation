@@ -1,6 +1,6 @@
 (defun change-config (c)
-  (setf (gethash 'width c) 800)                                     ;; width of the screen. default 800.
-  (setf (gethash 'height c) 600)                                    ;; height of the screen. default 600.
+  (setf (gethash 'width c) 1024)                                     ;; width of the screen. default 800.
+  (setf (gethash 'height c) 768)                                    ;; height of the screen. default 600.
   (setf (gethash 'fullscreen c) NIL)                                ;; fullscreen. possible values t for true and NIL for false. default NIL.
   (setf (gethash 'npc-color c) sdl:*black*)                         ;; cell color in rgb.
   (setf (gethash 'bg-color c) sdl:*green*)                          ;; background color in rgb.

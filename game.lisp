@@ -15,7 +15,7 @@
       (setf (gethash 'width c) (round (* (gethash 'height c) (/ 4 3)))))
   (if (> (/ (gethash 'width c) (gethash 'height c)) (/ 4 3))
       (setf (gethash 'widescreen-offset c) (round (/ (- (gethash 'width c) (* (gethash 'height c) (/ 4 3))) 2))))
-  (setf (gethash 'scale c) (/ (gethash 'height c) (gethash 'unscaled-height c)))
+  (setf (gethash 'scale c) (round (/ (gethash 'height c) (gethash 'unscaled-height c))))
   c)
 
 (defun update-start (world)
