@@ -267,7 +267,7 @@
       
       ;; Initialize fonts
       (defparameter *ebgaramond-ttf* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 8)) :filename "EBGaramond12-Regular.ttf"))
-      (unless (sdl:initialise-default-font *ebgaramond-ttf*) ;; sdl:*ttf-font-vera*
+      (unless (sdl:initialise-default-font *ebgaramond-ttf*)
 	(error "Cannot initialize the default font."))
 
       ;; Load sounds and music and play music
