@@ -27,6 +27,6 @@ A Common Lisp compiler, Quicklisp and the following SDL libraries:
 (save-lisp-and-die "main" :toplevel #'main :executable t)
 ```
 
-These steps may be automated by load the included file compile.lisp. 
+These steps may be automated by loading the included file compile.lisp. 
 
 See the Lispbuilder wiki for more information.
