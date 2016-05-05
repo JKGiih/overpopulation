@@ -50,12 +50,7 @@
 
   t)
 
-
-(defun update-game (world)
-
-  ;; Update frame
-  (setf (gethash 'frame world) (mod (+ 1 (gethash 'frame world)) 60))
-
+(defun update-npcs (world)
   ;; Update npcs once every second
   (let ((npcs (gethash 'npcs world)) (newrows ()) (newrow()))
     (cond ((eq (gethash 'frame world) 0)
@@ -99,8 +94,10 @@
 	   (setf newrows (cons (nth 0 npcs) newrows)) ;; first row doesn't change
 	   (setf (gethash 'npcs world) newrows)
 	 )
-	(t NIL)))
-        
+	  (t NIL))
+  (gethash 'npcs world)))
+
+(defun move-player (world)
   ;; Move characters
   (let ((npcs (gethash 'npcs world)) (player-x (round (gethash 'player-x world))) (player-y (round (gethash 'player-y world))) (player2-x (round (gethash 'player2-x world))) (player2-y (round (gethash 'player2-y world))) (player3-x (round (gethash 'player3-x world))) (player3-y (round (gethash 'player3-y world))) (player4-x (round (gethash 'player4-x world))) (player4-y (round (gethash 'player4-y world))))
     (cond ((sdl:get-key-state :sdl-key-w)
@@ -182,11 +179,28 @@
     (setf (nth (+ (round (gethash 'player3-x world)) 1) (nth (+ (round (gethash 'player3-y world)) 1) npcs)) 2)
     (setf (nth (+ (round (gethash 'player4-x world)) 1) (nth (+ (round (gethash 'player4-y world)) 1) npcs)) 2))
 
-  ;; Win conditions
+  world)
+  
+(defun check-win (world)
   (let ((player-x (gethash 'player-x world)) (player-y (gethash 'player-y world)) (player2-x (gethash 'player2-x world)) (player2-y (gethash 'player2-y world)) (player3-x (gethash 'player3-x world)) (player3-y (gethash 'player3-y world)) (player4-x (gethash 'player4-x world)) (player4-y (gethash 'player4-y world)) (width (gethash 'unscaled-width world)) (height (gethash 'unscaled-height world)))
     (cond ((<= (+ (abs (- player-x player2-x)) (abs (- player-x player3-x)) (abs (- player-x player4-x)) (abs (- player2-x player-x)) (abs (- player2-x player3-x)) (abs (- player2-x player4-x)) (abs (- player3-x player-x)) (abs (- player3-x player2-x)) (abs (- player3-x player4-x)) (abs (- player4-x player-x)) (abs (- player4-x player2-x)) (abs (- player4-x player3-x)) (abs (- player-y player2-y)) (abs (- player-y player3-y)) (abs (- player-y player4-y)) (abs (- player2-y player-y)) (abs (- player2-y player3-y)) (abs (- player2-y player4-y)) (abs (- player3-y player-y)) (abs (- player3-y player2-y)) (abs (- player3-y player4-y)) (abs (- player4-y player-y)) (abs (- player4-y player2-y)) (abs (- player4-y player3-y))) 20)
 	   (setf (gethash 'state world) "win"))))
- 
+  (gethash 'state world))
+
+(defun update-game (world)
+
+  ;; Update frame
+  (setf (gethash 'frame world) (mod (+ 1 (gethash 'frame world)) 60))
+
+  ;; Update npcs
+  (setf (gethash 'npcs world) (update-npcs world))
+
+  ;; Move player
+  (setf world (move-player world))
+
+  ;; Check if game is won
+  (setf (gethash 'state world) (check-win world))
+  
   world)
 
 (defun initialize-game (world)
