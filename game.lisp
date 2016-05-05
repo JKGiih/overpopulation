@@ -20,11 +20,13 @@
 
 (defun update-start (world)
   ;; Draw start screen
-  (sdl:draw-surface-at-* (gethash 'bg-sprite world) (gethash 'horizontal-offset world) (gethash 'vertical-offset world))
-  (sdl:draw-string-blended-* "Overpopulation" (round (/ (gethash 'width world) 5.0)) (round (/ (gethash 'height world) 5.0)) :font *ebgaramond-ttf-large* :color (gethash 'player-color world)) ;; ADD OFFSETS
-  (sdl:draw-string-blended-* "Or: Divided and Disillusioned We Wander" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 4.0)) :font *ebgaramond-ttf-small* :color (gethash 'player-color world)) ;; ADD OFFSETS
-  (sdl:draw-string-blended-* "in a World Gasping Under the Weight of Our Folly" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 3.0)) :font *ebgaramond-ttf-small* :color (gethash 'player-color world)) ;; ADD OFFSETS
-  (sdl:draw-string-blended-* "by HorseSoft" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 2.0)) :font *ebgaramond-ttf-medium* :color (gethash 'player-color world)) ;; ADD OFFSETS
+  (let ((width (gethash 'width world)) (height (gethash 'height world)) (horizontal-offset (gethash 'horizontal-offset world)) (vertical-offset (gethash 'vertical-offset world)))
+    (sdl:draw-surface-at-* (gethash 'bg-sprite world) horizontal-offset vertical-offset)
+    (sdl:draw-string-blended-* "Overpopulation" (round (+ horizontal-offset (/ width 6.0))) (round (+ vertical-offset (/ height 5.0))) :font *ebgaramond-ttf-large* :color (gethash 'player-color world))
+    (sdl:draw-string-blended-* "Or: Divided and Disillusioned We Wander" (round (+ horizontal-offset (/ width 4.0))) (round (+ vertical-offset (* (/ height 5.0) 2))) :font *ebgaramond-ttf-small* :color (gethash 'player-color world))
+    (sdl:draw-string-blended-* "in a World Gasping Under the Weight of Our Folly" (round (+ horizontal-offset (/ width 5.0))) (round (+ vertical-offset (/ height 2.0))) :font *ebgaramond-ttf-small* :color (gethash 'player-color world))
+    (sdl:draw-string-blended-* "an observation" (round (+ horizontal-offset (* (/ width 9.0) 5))) (round (+ vertical-offset (* (/ height 7.0) 5))) :font *ebgaramond-ttf-small* :color (gethash 'player-color world))
+    (sdl:draw-string-blended-* "by HorseSoft" (round (+ horizontal-offset (* (/ width 7.0) 4))) (round (+ vertical-offset (* (/ height 5.0) 4))) :font *ebgaramond-ttf-medium* :color (gethash 'player-color world)))
   world)
 
 (defun draw-win (world)
@@ -45,7 +47,7 @@
     (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player3-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player3-y world)) scale))))
     (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player4-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player4-y world)) scale)))))
   ;; Debug string
-  (sdl:draw-string-shaded-* (write-to-string (sdl:sdl-get-ticks)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 4) sdl:*red* sdl:*black*)
+  ;; (sdl:draw-string-shaded-* (write-to-string (sdl:sdl-get-ticks)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 4) sdl:*red* sdl:*black*)
   t)
 
 (defun update-npcs (world)
@@ -217,7 +219,7 @@
     (setf (gethash 'scale world) 10)
     (setf (gethash 'fullscreen world) NIL)
     (setf (gethash 'npc-color world) sdl:*black*)
-    (setf (gethash 'bg-color world) sdl:*green*)
+    (setf (gethash 'bg-color world) (sdl:color :r 4 :g 27 :b 0))
     (setf (gethash 'player-color world) (sdl:color :r 224 :g 255 :b 192))
     (setf (gethash 'last-update world) 0)
     (setf (gethash 'player-sprite world) NIL)
