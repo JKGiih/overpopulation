@@ -42,13 +42,12 @@
     (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player3-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player3-y world)) scale))))
     (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player4-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player4-y world)) scale)))))
   ;; Debug string
-  (sdl:draw-string-shaded-* (write-to-string (gethash 'frame world)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 4) sdl:*red* sdl:*black*)
+  (sdl:draw-string-shaded-* (write-to-string (sdl:sdl-get-ticks)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 4) sdl:*red* sdl:*black*)
   t)
 
 (defun update-npcs (world)
   ;; Update npcs once every second
-  (let ((npcs (gethash 'npcs world)) (newrows ()) (newrow()))
-    (cond ((eq (gethash 'frame world) 0)
+  (let ((npcs (gethash 'npcs world)) (newrows ()) (newrow()))    
 	   (setf newrows (cons (nth (- (list-length npcs) 1) npcs) newrows)) ;; last row doesn't change
 	     (loop for i from (+ (gethash 'unscaled-height world) 0) downto 1 do
 		  (setf newrow (cons (nth (- (list-length (nth i npcs)) 1) (nth i npcs)) newrow)) ;; last npc in row doesn't change
@@ -89,8 +88,7 @@
 	   (setf newrows (cons (nth 0 npcs) newrows)) ;; first row doesn't change
 	   (setf (gethash 'npcs world) newrows)
 	 )
-	  (t NIL))
-  (gethash 'npcs world)))
+  (gethash 'npcs world))
 
 (defun move-player (world)
   ;; Move characters
@@ -180,14 +178,15 @@
   (gethash 'state world))
 
 (defun update-game (world)
-  ;; Update frame
-  (setf (gethash 'frame world) (mod (+ 1 (gethash 'frame world)) 30))
-  ;; Update npcs
-  (setf (gethash 'npcs world) (update-npcs world))
+  (cond ((> (- (sdl:sdl-get-ticks) (gethash 'last-update world)) 1000)
+	 ;; Update npcs
+         (setf (gethash 'npcs world) (update-npcs world))
+         ;; Check if game is won
+         (setf (gethash 'state world) (check-win world))
+         ;; Update last-update
+         (setf (gethash 'last-update world) (sdl:sdl-get-ticks))))
   ;; Move player
   (setf world (move-player world))
-  ;; Check if game is won
-  (setf (gethash 'state world) (check-win world))  
   world)
 
 (defun initialize-game (world)
@@ -217,7 +216,7 @@
     (setf (gethash 'npc-color world) sdl:*black*)
     (setf (gethash 'bg-color world) sdl:*green*)
     (setf (gethash 'player-color world) (sdl:color :r 224 :g 255 :b 192))
-    (setf (gethash 'frame world) 0)
+    (setf (gethash 'last-update world) 0)
     (setf (gethash 'player-sprite world) NIL)
     (setf (gethash 'npc-sprite world) NIL)
     (setf (gethash 'bg-sprite world) NIL)
