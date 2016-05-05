@@ -31,9 +31,9 @@
 
 (defun draw-game (world)
   
-    ;; Draw background
-  (sdl:draw-box (sdl:rectangle-from-edges-* (gethash 'widescreen-offset world) 0 (+ (gethash 'widescreen-offset world) (* (gethash 'scale world) (gethash 'unscaled-width world))) (* (gethash 'scale world) (gethash 'unscaled-height world))) :color (gethash 'bg-color world))
-
+  ;; Draw background
+  (sdl:draw-surface-at-* (gethash 'bg-sprite world) (gethash 'widescreen-offset world) 0)
+  
   ;; Draw npcs
   (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
        (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'npcs world))) 1) do
@@ -235,6 +235,7 @@
     (setf (gethash 'player2-sprite world) NIL)
     (setf (gethash 'player3-sprite world) NIL)
     (setf (gethash 'player4-sprite world) NIL)
+    (setf (gethash 'bg-sprite world) NIL)
     (when (probe-file "sounds/sf.ogg")
       (setf (gethash 'sound-on-p world) t)
       (setf (gethash 'sound-volume world) 96)
@@ -278,6 +279,9 @@
       (setf (gethash 'player4-sprite world) (sdl:create-surface (gethash 'scale world) (gethash 'scale world)))
       (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'scale world) (gethash 'scale world))
 		    :color (gethash 'player-color world) :surface (gethash 'player4-sprite world))
+      (setf (gethash 'bg-sprite world) (sdl:create-surface (gethash 'width world) (gethash 'height world)))
+      (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'width world) (gethash 'height world))
+		    :color (gethash 'bg-color world) :surface (gethash 'bg-sprite world))
       
       ;; Initialize fonts
       (defparameter *ebgaramond-ttf* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 8)) :filename "EBGaramond12-Regular.ttf"))
