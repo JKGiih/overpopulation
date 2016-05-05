@@ -30,17 +30,17 @@
   t)
 
 (defun draw-game (world)  
-  ;; Draw background
-  (sdl:draw-surface-at-* (gethash 'bg-sprite world) (gethash 'horizontal-offset world) (gethash'vertical-offset world))  
-  ;; Draw characters
-  (let ((player-sprite (gethash 'player-sprite world)) (npc-sprite (gethash 'npc-sprite world)))
+  (let ((player-sprite (gethash 'player-sprite world)) (npc-sprite (gethash 'npc-sprite world)) (horizontal-offset (gethash 'horizontal-offset world)) (vertical-offset (gethash 'vertical-offset world)) (scale (gethash 'scale world)))
+    ;; Draw background
+    (sdl:draw-surface-at-* (gethash 'bg-sprite world) horizontal-offset vertical-offset)  
+    ;; Draw characters  
     (loop for i from 0 to (- (gethash 'unscaled-height world) 1) do
 	 (loop for j from 0 to (- (gethash 'unscaled-width world) 1) when (eq (nth (+ j 1) (nth (+ i 1) (gethash 'npcs world))) 1) do
-	      (sdl:draw-surface-at-* npc-sprite (round (+ (gethash 'horizontal-offset world) (* j (gethash 'scale world)))) (round (+ (gethash 'vertical-offset world) (* i (gethash 'scale world)))))))
-    (sdl:draw-surface-at-* player-sprite (round (+ (gethash 'horizontal-offset world) (* (round (gethash 'player-x world)) (gethash 'scale world)))) (round (+ (gethash 'vertical-offset world) (* (round (gethash 'player-y world)) (gethash 'scale world)))))
-    (sdl:draw-surface-at-* player-sprite (round (+ (gethash 'horizontal-offset world) (* (round (gethash 'player2-x world)) (gethash 'scale world)))) (round (+ (gethash 'vertical-offset world) (* (round (gethash 'player2-y world)) (gethash 'scale world)))))
-    (sdl:draw-surface-at-* player-sprite (round (+ (gethash 'horizontal-offset world) (* (round (gethash 'player3-x world)) (gethash 'scale world)))) (round (+ (gethash 'vertical-offset world) (* (round (gethash 'player3-y world)) (gethash 'scale world)))))
-    (sdl:draw-surface-at-* player-sprite (round (+ (gethash 'horizontal-offset world) (* (round (gethash 'player4-x world)) (gethash 'scale world)))) (round (+ (gethash 'vertical-offset world) (* (round (gethash 'player4-y world)) (gethash 'scale world))))))
+	      (sdl:draw-surface-at-* npc-sprite (round (+ horizontal-offset (* j scale))) (round (+ vertical-offset (* i scale))))))
+    (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player-y world)) scale))))
+    (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player2-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player2-y world)) scale))))
+    (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player3-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player3-y world)) scale))))
+    (sdl:draw-surface-at-* player-sprite (round (+ horizontal-offset (* (round (gethash 'player4-x world)) scale))) (round (+ vertical-offset (* (round (gethash 'player4-y world)) scale)))))
   ;; Debug string
   ;; (sdl:draw-string-shaded-* (write-to-string (gethash 'player-x world)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 4) sdl:*red* sdl:*black*)
   ;; (sdl:draw-string-shaded-* (write-to-string (gethash 'player-y world)) (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*)
