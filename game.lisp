@@ -21,7 +21,10 @@
 (defun update-start (world)
   ;; Draw start screen
   (sdl:draw-surface-at-* (gethash 'bg-sprite world) (gethash 'horizontal-offset world) (gethash 'vertical-offset world))
-  (sdl:draw-string-shaded-* "Overpopulation" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 3.0)) (gethash 'player-color world) sdl:*black*) ;; ADD OFFSETS
+  (sdl:draw-string-blended-* "Overpopulation" (round (/ (gethash 'width world) 5.0)) (round (/ (gethash 'height world) 5.0)) :font *ebgaramond-ttf-large* :color (gethash 'player-color world)) ;; ADD OFFSETS
+  (sdl:draw-string-blended-* "Or: Divided and Disillusioned We Wander" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 4.0)) :font *ebgaramond-ttf-small* :color (gethash 'player-color world)) ;; ADD OFFSETS
+  (sdl:draw-string-blended-* "in a World Gasping Under the Weight of Our Folly" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 3.0)) :font *ebgaramond-ttf-small* :color (gethash 'player-color world)) ;; ADD OFFSETS
+  (sdl:draw-string-blended-* "by HorseSoft" (round (/ (gethash 'width world) 4.0)) (round (/ (gethash 'height world) 2.0)) :font *ebgaramond-ttf-medium* :color (gethash 'player-color world)) ;; ADD OFFSETS
   world)
 
 (defun draw-win (world)
@@ -255,9 +258,15 @@
       (sdl:draw-box (sdl:rectangle-from-edges-* 0 0 (gethash 'width world) (gethash 'height world))
 		    :color (gethash 'bg-color world) :surface (gethash 'bg-sprite world))      
       ;; Initialize fonts
-      (defparameter *ebgaramond-ttf* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 8)) :filename "EBGaramond12-Regular.ttf"))
-      (unless (sdl:initialise-default-font *ebgaramond-ttf*)
-	(error "Cannot initialize the default font."))
+      (defparameter *ebgaramond-ttf-small* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 2)) :filename "EBGaramond12-Regular.ttf"))
+      (defparameter *ebgaramond-ttf-medium* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 4)) :filename "EBGaramond12-Regular.ttf"))
+      (defparameter *ebgaramond-ttf-large* (make-instance 'SDL:ttf-font-definition :size (round (* (/ (gethash 'height world) (gethash 'unscaled-height world)) 8)) :filename "EBGaramond12-Regular.ttf"))
+      (unless (setf *ebgaramond-ttf-small* (sdl:initialise-font *ebgaramond-ttf-small*))
+	(error "Cannot initialize font: EBGaramond12-Regular.ttf"))
+      (unless (setf *ebgaramond-ttf-medium* (sdl:initialise-default-font *ebgaramond-ttf-medium*))
+	(error "Cannot initialize font: EBGaramond12-Regular.ttf"))
+      (unless (setf *ebgaramond-ttf-large* (sdl:initialise-font *ebgaramond-ttf-large*))
+	(error "Cannot initialize font: EBGaramond12-Regular.ttf"))
       ;; Load sounds and music and play music
       (when (or (gethash 'music-on-p world) (gethash 'sound-on-p world))
 	(sdl-mixer:OPEN-AUDIO)
