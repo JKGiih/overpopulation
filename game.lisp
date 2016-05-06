@@ -31,7 +31,7 @@
 
 (defun draw-win (world)
   (draw-game world)
-  (sdl:draw-string-shaded-* "WIN GET!" (/ (gethash 'width world) 2) (/ (gethash 'height world) 2) sdl:*red* sdl:*black*) ;; ADD OFFSETS
+  (sdl:draw-string-blended-* "WIN GET!" (round (+ horizontal-offset (/ width 6.0))) (round (+ vertical-offset (/ height 5.0))) :font *ebgaramond-ttf-large* :color (gethash 'player-color world))
   t)
 
 (defun draw-game (world)  
@@ -310,7 +310,7 @@
 			 (if (and (gethash 'sound-on-p world) (sdl-mixer:sample-playing-p 0) (not (or (sdl:get-key-state :sdl-key-w) (sdl:get-key-state :sdl-key-s) (sdl:get-key-state :sdl-key-a) (sdl:get-key-state :sdl-key-d))))
 			     (sdl-mixer:halt-sample :channel 0 :fade 5))))
 	(:idle ()	       
-	       ;; Clear screen every frame
+	       ;; Clear screen
 	       (sdl:clear-display sdl:*black*)
 	       ;; Update and draw the state we're in
 	       (cond
@@ -321,5 +321,5 @@
 		  (draw-game world))
 		 ((equal (gethash 'state world) "win")
 		  (draw-win world)))
-	       ;; Redraw screen every frame
+	       ;; Redraw screen
 	       (sdl:update-display))))))
